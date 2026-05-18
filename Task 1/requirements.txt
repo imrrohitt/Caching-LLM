@@ -1,0 +1,7 @@
+numpy>=1.24.0
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+python-dotenv>=1.0.0
+openai>=1.12.0
+# Real semantic embeddings for production/demo (installs torch; ~1–2 min first time)
+sentence-transformers>=2.2.0
