@@ -1,16 +1,16 @@
-# PropOS — Assessment Tasks
+# Caching-LLM
 
-This repository contains two independent deliverables:
+Tools for reducing LLM cost and latency: semantic prompt caching, WhatsApp conversation state, and RERA compliance knowledge graph design.
 
-| Folder | Task | Description |
-|--------|------|-------------|
-| [**Task 1**](Task%201/) | Semantic Prompt Cache | Embedding-based LLM prompt cache with FastAPI demo |
-| [**Task 2**](Task%202/) | Ridhi — WhatsApp Session State | Priya CP onboarding state (Monday–Thursday scenario) |
-| [**Task 3**](Task%203/) | RERA Knowledge Graph Schema | Leela cross-document RAG — design only (Neo4j schema) |
+| Module | Description |
+|--------|-------------|
+| [**Task 1**](Task%201/) | Embedding-based semantic prompt cache with FastAPI demo |
+| [**Task 2**](Task%202/) | WhatsApp session state for channel-partner onboarding (24-hour window) |
+| [**Task 3**](Task%203/) | RERA knowledge graph schema (Neo4j / GraphRAG design) |
 
 ## Quick start
 
-### Task 1 — Semantic Prompt Cache
+### Semantic prompt cache
 
 ```bash
 cd "Task 1"
@@ -20,9 +20,9 @@ pytest -v -m "not integration"
 ./scripts/run_demo.sh
 ```
 
-See [Task 1/README.md](Task%201/README.md) for full documentation.
+Docs: [Task 1/README.md](Task%201/README.md)
 
-### Task 2 — WhatsApp Session State
+### WhatsApp session state
 
 ```bash
 cd "Task 2"
@@ -32,14 +32,19 @@ pytest -v
 ./scripts/run_webhook.sh
 ```
 
-See [Task 2/README.md](Task%202/README.md) and [Task 2/docs/ARCHITECTURE.md](Task%202/docs/ARCHITECTURE.md).
+Docs: [Task 2/README.md](Task%202/README.md) · [Architecture](Task%202/docs/ARCHITECTURE.md)
 
-### Task 3 — RERA Knowledge Graph (design only)
+### RERA knowledge graph
 
-```bash
-cd "Task 3"
-# Read the design document — no code to run
-open docs/RERA_KNOWLEDGE_GRAPH_SCHEMA.md
+Design documentation only (no runtime code):
+
+[Task 3/docs/RERA_KNOWLEDGE_GRAPH_SCHEMA.md](Task%203/docs/RERA_KNOWLEDGE_GRAPH_SCHEMA.md)
+
+## Repository layout
+
 ```
-
-See [Task 3/docs/RERA_KNOWLEDGE_GRAPH_SCHEMA.md](Task%203/docs/RERA_KNOWLEDGE_GRAPH_SCHEMA.md).
+Caching-LLM/
+├── Task 1/    # semantic_cache + FastAPI /chat demo
+├── Task 2/    # ridhi WhatsApp webhook + state manager
+└── Task 3/    # RERA KG schema (markdown)
+```

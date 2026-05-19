@@ -1,26 +1,26 @@
-# Task 2: Ridhi — WhatsApp Session State Design
+# WhatsApp Session State (Ridhi)
 
-Priya (PropOS CP onboarding agent) conversation state management for the **Monday → Tuesday silence → Thursday return** scenario on WhatsApp.
+Conversation state management for channel-partner onboarding over WhatsApp, including the **Monday → Tuesday silence → Thursday return** pattern and Meta’s 24-hour messaging window.
 
-## Deliverables
+## Overview
 
-| Part | Item | Location |
-|------|------|----------|
-| **A** | Architecture (checkpoints, Redis, 24h, templates, failures) | `docs/ARCHITECTURE.md` |
-| **B** | WhatsApp webhook mock (Meta format) | `api/webhook.py` |
-| **B** | Session state manager (Redis + in-memory fallback) | `ridhi/state_manager.py` |
-| **B** | Priya 3-checkpoint flow (plain Python FSM) | `ridhi/priya_flow.py` |
-| **B** | Hindi responses + LLM prompt | `ridhi/hindi_prompts.py` |
-| **B** | 24-hour simulation test | `tests/test_monday_thursday_flow.py` |
+| Component | Location |
+|-----------|----------|
+| Architecture (checkpoints, Redis, 24h, templates, failures) | `docs/ARCHITECTURE.md` |
+| WhatsApp webhook (Meta format) | `api/webhook.py` |
+| Session state manager (Redis + in-memory fallback) | `ridhi/state_manager.py` |
+| Onboarding flow (plain Python state machine) | `ridhi/priya_flow.py` |
+| Hindi responses + LLM prompt | `ridhi/hindi_prompts.py` |
+| Simulation tests | `tests/test_monday_thursday_flow.py` |
 
-## Checkpoints (code)
+## Checkpoints
 
-1. `NAME_COLLECTION` — CP full name  
+1. `NAME_COLLECTION` — partner full name  
 2. `PROJECT_INTEREST` — project selection (1=Sunrise, 2=Green Valley)  
 3. `EOI_CONFIRMATION` — expression of interest  
 4. `COMPLETED` — terminal state  
 
-Architecture doc defines **6 checkpoints** including `CONSENT` and `KYC_DOCUMENTS` for full production.
+The architecture doc also describes `CONSENT` and `KYC_DOCUMENTS` for a full production rollout.
 
 ## Quick start
 
@@ -34,11 +34,11 @@ pytest -v
 ### Run webhook server
 
 ```bash
-uvicorn api.webhook:app --reload --port 8001
+./scripts/run_webhook.sh
+# or: uvicorn api.webhook:app --reload --port 8001
 ```
 
 ```bash
-# Simulate Meta inbound message
 curl -s -X POST http://localhost:8001/webhook/whatsapp \
   -H "Content-Type: application/json" \
   -d '{
@@ -63,15 +63,15 @@ curl -s -X POST http://localhost:8001/webhook/whatsapp \
 |----------|-------------|
 | `REDIS_URL` | Optional Redis (e.g. `redis://localhost:6379/0`) |
 | `OPENAI_API_KEY` | Optional — generates Hindi via LLM |
-| `WHATSAPP_VERIFY_TOKEN` | Webhook verification (default `propos_ridhi_dev`) |
+| `WHATSAPP_VERIFY_TOKEN` | Webhook verification (default `ridhi_dev_verify`) |
 
-## State machine choice
+## State machine
 
-**Plain Python** over LangGraph: 3 deterministic checkpoints, easy Monday–Thursday simulation, no LLM variance in transitions. LangGraph recommended when Priya adds KYC OCR, CRM writes, and human handoff.
+**Plain Python** instead of LangGraph for this scope: deterministic checkpoints, straightforward Monday–Thursday tests, no LLM variance in transitions. Consider LangGraph when adding KYC OCR, CRM integration, and human handoff.
 
-## Hindi prompt
+## Hindi prompts
 
-See `PRIYA_REENGAGE_PROMPT` in `ridhi/hindi_prompts.py`. Fallback Hindi text is pre-generated when `OPENAI_API_KEY` is unset.
+See `PRIYA_REENGAGE_PROMPT` in `ridhi/hindi_prompts.py`. Curated Hindi fallback is used when `OPENAI_API_KEY` is not set.
 
 ## Tests
 
@@ -79,9 +79,9 @@ See `PRIYA_REENGAGE_PROMPT` in `ridhi/hindi_prompts.py`. Fallback Hindi text is 
 pytest -v tests/test_monday_thursday_flow.py
 ```
 
-`test_monday_tuesday_thursday_resume_from_checkpoint` simulates:
+`test_monday_tuesday_thursday_resume_from_checkpoint` covers:
 
 - **Monday:** name + project selection  
-- **Tuesday:** silence (state in Redis/memory)  
-- **Thursday:** session expired → Hindi re-engagement → resume at EOI (not restart)  
+- **Tuesday:** silence (state persisted)  
+- **Thursday:** expired session → Hindi re-engagement → resume at EOI  
 - **Thursday:** EOI confirm → `COMPLETED`

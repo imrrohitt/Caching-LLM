@@ -1,25 +1,17 @@
-# Task 3: RERA Knowledge Graph Schema — Design Only
+# RERA Knowledge Graph Schema
 
-Written design for **Leela** (PropOS RERA Compliance AI): Neo4j schema, ingestion pipeline, Cypher examples, and GraphRAG vs vector RAG analysis.
+Design for **Leela** (RERA compliance): Neo4j schema, ingestion pipeline, Cypher examples, and when graph RAG outperforms vector-only RAG on cross-document citations.
 
-**No code** — documentation only (per task brief).
+Documentation only — no application code in this module.
 
-## Document
+## Main document
 
-| File | Contents |
-|------|----------|
-| [docs/RERA_KNOWLEDGE_GRAPH_SCHEMA.md](docs/RERA_KNOWLEDGE_GRAPH_SCHEMA.md) | Full schema design (§17–§22) |
+[docs/RERA_KNOWLEDGE_GRAPH_SCHEMA.md](docs/RERA_KNOWLEDGE_GRAPH_SCHEMA.md)
 
-## Quick navigation
+## Contents
 
-- **Nodes:** Document, Section, Clause, Project, Developer, Plot, Deadline, RegulatoryAuthority, DateReference
-- **Edges:** `REFERENCES`, `REFERENCES_DOCUMENT`, `HAS_SECTION`, `IMPOSES_DEADLINE`, `AMENDS`, …
-- **Cypher:** Section 4 Greenview Heights → all referenced docs/clauses
-- **KG wins:** cross-doc citations, multi-hop deadlines, superseded MOUs
-- **Limits:** OCR quality, state-wise format drift
-
-## Evaluation alignment (15% — RERA KG depth)
-
-- Node/edge types are **RERA-specific** (approval letter, MOU, Form B, MahaRERA, plot survey numbers)
-- Cypher traverses `REFERENCES` / `REFERENCES_DOCUMENT` from a named section
-- Three vector-RAG failure cases are **concrete** to Indian RERA packs, not generic FAQ examples
+- **Nodes:** Document, Section, Clause, Project, Developer, Plot, Deadline, RegulatoryAuthority, DateReference  
+- **Edges:** `REFERENCES`, `REFERENCES_DOCUMENT`, `HAS_SECTION`, `IMPOSES_DEADLINE`, `AMENDS`, …  
+- **Cypher:** e.g. all documents/clauses referenced by Section 4 of an approval letter  
+- **Graph vs vector:** citation chains, multi-hop deadlines, superseded MOUs  
+- **Limits:** OCR quality, state-wise format differences  

@@ -1,25 +1,8 @@
-# Task 1: PropOS Semantic Prompt Cache
+# Semantic Prompt Cache
 
-Embedding-based semantic cache for LLM prompts. When a new query arrives, the cache checks whether a **semantically similar** prompt was already answered and returns the stored response instead of calling the LLM again.
+Embedding-based cache for LLM prompts. When a new query arrives, the cache checks whether a **semantically similar** prompt was already answered and returns the stored response instead of calling the LLM again.
 
-Built for PropOS-style agent workloads where repeated or paraphrased queries (10,000–50,000 LLM calls/month) can be served from cache at sub-10ms latency.
-
-## Task checklist
-
-| Requirement | Status | Location |
-|-------------|--------|----------|
-| `SemanticCache` with `cache_set`, `cache_get`, `cache_stats` | Done | `semantic_cache/cache.py` |
-| Embedding similarity (not exact string match) | Done | `semantic_cache/embeddings.py` — `all-MiniLM-L6-v2` |
-| Configurable `threshold` on `cache_get` (default `0.92`) | Done | `cache_get(prompt, threshold=None)` |
-| TTL cache invalidation (default 3600s) | Done | `ttl_seconds` constructor arg |
-| FastAPI demo wrapping LLM + cache | Done | `demo/app.py` — `/chat` |
-| Cache hits &lt;10ms vs LLM miss | Done | `tests/test_demo_api.py`, integration test |
-| 10 unit test cases | Done | `tests/test_semantic_cache.py` |
-| Threshold calibration & risks documented | Done | README — Design decisions |
-| False positive analysis | Done | README — False positives |
-| Production considerations (10k+/day) | Done | README — Production roadmap |
-| Real embedding integration tests | Done | `tests/test_integration_embeddings.py` |
-| End-to-end verification script | Done | `scripts/verify_e2e_flow.py` |
+Suited to agent workloads with repeated or paraphrased queries (high monthly call volume), with cache hits typically served in under 10ms.
 
 ---
 
@@ -39,7 +22,7 @@ Built for PropOS-style agent workloads where repeated or paraphrased queries (10
 ## Project structure
 
 ```
-ProOps/
+Task 1/
 ├── semantic_cache/
 │   ├── cache.py           # SemanticCache: cache_set, cache_get, cache_stats
 │   └── embeddings.py      # SentenceTransformer + Mock embedders
@@ -226,7 +209,7 @@ For cost-sensitive bootstrap budgets, a threshold slightly too high is usually c
 
 ### TTL (default 3600 seconds / 1 hour)
 
-Operational LLM answers (status, configs, runbooks) stay useful long enough to amortize repeated calls within a session, but should not live forever — upstream data and policies change. One hour balances hit rate vs freshness for PropOS-style agent traffic.
+Operational LLM answers (status, configs, runbooks) stay useful long enough to amortize repeated calls within a session, but should not live forever — upstream data and policies change. One hour balances hit rate vs freshness for typical agent traffic.
 
 ---
 
@@ -262,7 +245,7 @@ This implementation optimizes **cost and latency**, not correctness guarantees. 
 
 ## Production roadmap (10,000+ queries/day)
 
-At PropOS’s projected volume (10k–50k calls/month), the following additions matter most:
+At scale (10k+ queries per day), the following additions matter most:
 
 ### Storage and lookup
 
@@ -292,7 +275,7 @@ At PropOS’s projected volume (10k–50k calls/month), the following additions 
 - Warm embedding model on startup; batch embed on write bursts.
 - Target: cache lookup p99 &lt; 10 ms (this build achieves &lt;10 ms on hits in tests).
 
-### Priority order for PropOS
+### Recommended rollout order
 
 1. Scoped cache keys (tenant + agent) — largest FP reduction per effort  
 2. Redis + vector index — durability and scale  
@@ -335,4 +318,4 @@ Optional: `OPENAI_API_KEY` for real LLM responses in the demo (otherwise a deter
 
 ## License
 
-Internal / assessment use for PropOS.
+MIT (see repository root).
